@@ -34,3 +34,52 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
+Old API from DictionaryAPI
+const fetchWordDetails = async (word: string): Promise<VocabWord> => {
+  try {
+    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+    const data = await response.json();
+
+    if (!data.length) {
+      return {
+        word: word,
+        pronunciation: '',
+        wordForm: '',
+        synonyms: [],
+        antonyms: [],
+        examples: [],
+        description: 'No description available.',
+        origin: ''
+      };
+    }
+
+    const details = data[0];
+    const meaning = details.meanings[0];
+    const definition = meaning.definitions[0];
+
+    return {
+      word: word,
+      pronunciation: details.phonetic || '',
+      wordForm: meaning.partOfSpeech || '',
+      synonyms: definition.synonyms || [],
+      antonyms: definition.antonyms || [],
+      examples: definition.example ? [definition.example] : [],
+      description: definition.definition || '',
+      origin: details.origin || ''
+    };
+  } catch (error) {
+    console.error('Error fetching word details:', error);
+    return {
+      word: word,
+      pronunciation: '',
+      wordForm: '',
+      synonyms: [],
+      antonyms: [],
+      examples: [],
+      description: 'Error fetching definition.',
+      origin: ''
+    };
+  }
+};
